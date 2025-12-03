@@ -1,0 +1,41 @@
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Training outputs
+VAE/srvae_outputs/
+VAE/checkpoints/
+GAN/srgan_outputs/
+GAN/checkpoints/
+**/samples/
+**/outputs/
+
+# Model files
+*.pth
+*.pt
+*.ckpt
+
+# Data
+data/
+VAE/data/
+GAN/data/
+*.jpg
+*.png
+*.jpeg
+*.bmp
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+ENV/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
