@@ -14,17 +14,7 @@ from dataset import ImageDataset
 
 
 def calculate_psnr(img1, img2, max_value=1.0):
-    """
-    Calculate Peak Signal-to-Noise Ratio (PSNR)
-
-    Args:
-        img1: First image tensor
-        img2: Second image tensor
-        max_value: Maximum possible pixel value
-
-    Returns:
-        PSNR value in dB
-    """
+    """Calculate Peak Signal-to-Noise Ratio (PSNR)"""
     mse = torch.mean((img1 - img2) ** 2)
     if mse == 0:
         return float('inf')
@@ -32,18 +22,7 @@ def calculate_psnr(img1, img2, max_value=1.0):
 
 
 def calculate_ssim(img1, img2, window_size=11, size_average=True):
-    """
-    Calculate Structural Similarity Index (SSIM)
-
-    Args:
-        img1: First image tensor
-        img2: Second image tensor
-        window_size: Size of Gaussian window
-        size_average: Whether to average over all pixels
-
-    Returns:
-        SSIM value between 0 and 1
-    """
+    """Calculate Structural Similarity Index (SSIM)"""
     C1 = 0.01 ** 2
     C2 = 0.03 ** 2
 
@@ -71,17 +50,7 @@ def calculate_ssim(img1, img2, window_size=11, size_average=True):
 
 
 def evaluate_model(generator, dataloader, device):
-    """
-    Evaluate generator on dataset
-
-    Args:
-        generator: Trained generator model
-        dataloader: DataLoader with test images
-        device: Torch device
-
-    Returns:
-        Dictionary with evaluation metrics
-    """
+    """Evaluate SRGAN generator on dataset"""
     generator.eval()
 
     total_psnr = 0
@@ -141,9 +110,15 @@ def main():
     # Load generator
     print(f"Loading model from {args.model}...")
     generator = Generator(num_residual_blocks=16).to(device)
-    generator.load_state_dict(torch.load(args.model, map_location=device))
-    print("Model loaded successfully\n")
 
+    checkpoint = torch.load(args.model, map_location=device)
+    if isinstance(checkpoint, dict) and 'generator_state_dict' in checkpoint:
+        generator.load_state_dict(checkpoint['generator_state_dict'])
+        print(f"Loaded checkpoint from epoch {checkpoint.get('epoch', 'unknown')}")
+    else:
+        generator.load_state_dict(checkpoint)
+
+    print("Model loaded successfully\n")
     # Create dataset
     print(f"Loading test data from {args.data}...")
     dataset = ImageDataset(
@@ -169,7 +144,7 @@ def main():
 
     # Print results
     print("\n" + "=" * 70)
-    print("EVALUATION RESULTS")
+    print("SRGAN EVALUATION RESULTS")
     print("=" * 70)
     print(f"PSNR: {metrics['psnr']:.2f} dB")
     print(f"SSIM: {metrics['ssim']:.4f}")
